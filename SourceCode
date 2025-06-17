@@ -1,4 +1,3 @@
--- Script by azzikx
 --Скрипт делал Azzikx 🦜❤️--
 --Самый простой и компактный скрипт на анимацию для хвостика--
 
@@ -8,9 +7,12 @@ local ADelay = TI.Time * 0.85 -- немного укороченное врем�
 local Angle = 0.174 -- угол поворота хвоста
 
 function PlayTail(Tail : Accessory) -- Функция анимации хвостика
-	local Attach : Attachment = Tail.Handle:FindFirstChild("WaistBackAttachment") -- Аттачмент который держит хвост
-	local left = TS:Create(Attach, TI, {Axis = Vector3.new(-0.985, 0, Angle * -1)}) -- Анимация взмаха хвоста влево
-	local right = TS:Create(Attach, TI, {Axis = Vector3.new(-0.985, 0, Angle)}) -- Анимация взмаха хвоста вправо
+	local Attach : Attachment = Tail.Handle:FindFirstChildOfClass("Attachment") -- Аттачмент который держит хвост
+	local CurAxis = Attach.Axis -- Получение поворота хвоста
+	local Mult = 1 -- Число для умножения
+	if CurAxis.Z > 0 then Mult = -1 end -- Если хвост повернут в другую сторону, то число для вращения должно быть отрицательным иначе хвост будет торчать вспереди
+	local left = TS:Create(Attach, TI, {Axis = Vector3.new(0.985 * Mult, 0, CurAxis.Z - Angle)}) -- Анимация взмаха хвоста влево
+	local right = TS:Create(Attach, TI, {Axis = Vector3.new(0.985 * Mult, 0, CurAxis.Z + Angle)}) -- Анимация взмаха хвоста вправо
 	repeat -- Цикл, где сначало запускаеть анимация взмаха хвоста влево, а потом вправо
 		left:Play()
 		wait(ADelay)
@@ -24,7 +26,7 @@ game.Players.PlayerAdded:Connect(function(plr) -- Когда игрок захо
 		for i, v in pairs(char:GetChildren()) do --Перебираем все обьекты которые находяться в персонаже
 			--Проверка, являеться ли данный обьект хвостом \/ \/ \/
 			--Если парт Акссесуар\/ Если в Акссесуаре есть Атач. который держит хвост\/  Если в имени акса есть слово tail (хвост)\/
-			if v:IsA("Accessory") and v.Handle:FindFirstChild("WaistBackAttachment") and string.find(string.lower(v.Name), "tail") then
+			if v:IsA("Accessory") and v.Handle:FindFirstChildOfClass("Attachment") and string.find(string.lower(v.Name), "tail") then
 				task.spawn(PlayTail, v) -- Запускает функцию для хвоста
 			end
 		end
